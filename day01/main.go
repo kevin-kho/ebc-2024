@@ -7,16 +7,11 @@ import (
 	"github.com/kevin-kho/aoc-utilities/common"
 )
 
-type Pair struct {
-	Enemy0 byte
-	Enemy1 byte
-}
-
-type Triplet struct {
+type Group struct {
 	Enemies []byte
 }
 
-func (t Triplet) GetPotionCost() int {
+func (t Group) GetPotionCost() int {
 	mp := map[byte]int{
 		'A': 0,
 		'B': 1,
@@ -41,7 +36,7 @@ func (t Triplet) GetPotionCost() int {
 
 }
 
-func CreateTriplet(data [3]byte) Triplet {
+func CreateGroup(data []byte) Group {
 
 	var enemies []byte
 	for _, d := range data {
@@ -51,36 +46,10 @@ func CreateTriplet(data [3]byte) Triplet {
 		enemies = append(enemies, d)
 	}
 
-	return Triplet{
+	return Group{
 		Enemies: enemies,
 	}
 
-}
-
-func (p Pair) GetPotionCost() int {
-	mp := map[byte]int{
-		'A': 0,
-		'B': 1,
-		'C': 3,
-		'D': 5,
-	}
-	var extra int
-	if p.Enemy0 != 'x' && p.Enemy1 != 'x' {
-		extra = 2
-	}
-
-	return mp[p.Enemy0] + mp[p.Enemy1] + extra
-
-}
-
-func CreatePair(data [2]byte) Pair {
-	enemy0 := data[0]
-	enemy1 := data[1]
-
-	return Pair{
-		Enemy0: enemy0,
-		Enemy1: enemy1,
-	}
 }
 
 func SolvePartOne(data []byte) int {
@@ -100,18 +69,18 @@ func SolvePartOne(data []byte) int {
 }
 
 func SolvePartTwo(data []byte) int {
-	var pairs []Pair
+	var groups []Group
 	for i := 1; i < len(data); i += 2 {
 		a := data[i-1]
 		b := data[i]
 
-		p := CreatePair([2]byte{a, b})
-		pairs = append(pairs, p)
+		g := CreateGroup([]byte{a, b})
+		groups = append(groups, g)
 	}
 
 	var res int
-	for _, p := range pairs {
-		res += p.GetPotionCost()
+	for _, g := range groups {
+		res += g.GetPotionCost()
 	}
 
 	return res
@@ -119,19 +88,19 @@ func SolvePartTwo(data []byte) int {
 }
 
 func SolvePartThree(data []byte) int {
-	var triplets []Triplet
+	var groups []Group
 	for i := 2; i < len(data); i += 3 {
 		a := data[i-2]
 		b := data[i-1]
 		c := data[i]
 
-		t := CreateTriplet([3]byte{a, b, c})
-		triplets = append(triplets, t)
+		t := CreateGroup([]byte{a, b, c})
+		groups = append(groups, t)
 	}
 
 	var res int
-	for _, t := range triplets {
-		res += t.GetPotionCost()
+	for _, g := range groups {
+		res += g.GetPotionCost()
 	}
 
 	return res
