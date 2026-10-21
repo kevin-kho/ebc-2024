@@ -13,8 +13,48 @@ type Pair struct {
 }
 
 type Triplet struct {
-	Pair
-	Enemy2 byte
+	Enemies []byte
+}
+
+func (t Triplet) GetPotionCost() int {
+	mp := map[byte]int{
+		'A': 0,
+		'B': 1,
+		'C': 3,
+		'D': 5,
+	}
+	var extra int
+	switch len(t.Enemies) {
+	case 2:
+		extra = 2
+	case 3:
+		extra = 6
+	}
+
+	var res int
+	for _, e := range t.Enemies {
+		res += mp[e]
+	}
+	res += extra
+
+	return res
+
+}
+
+func CreateTriplet(data [3]byte) Triplet {
+
+	var enemies []byte
+	for _, d := range data {
+		if d == 'x' {
+			continue
+		}
+		enemies = append(enemies, d)
+	}
+
+	return Triplet{
+		Enemies: enemies,
+	}
+
 }
 
 func (p Pair) GetPotionCost() int {
@@ -78,6 +118,26 @@ func SolvePartTwo(data []byte) int {
 
 }
 
+func SolvePartThree(data []byte) int {
+	var triplets []Triplet
+	for i := 2; i < len(data); i += 3 {
+		a := data[i-2]
+		b := data[i-1]
+		c := data[i]
+
+		t := CreateTriplet([3]byte{a, b, c})
+		triplets = append(triplets, t)
+	}
+
+	var res int
+	for _, t := range triplets {
+		res += t.GetPotionCost()
+	}
+
+	return res
+
+}
+
 func main() {
 	dataPartOne, err := common.ReadInput("inputPartOne.txt")
 	if err != nil {
@@ -95,5 +155,13 @@ func main() {
 	dataPartTwo = common.TrimNewLineSuffix(dataPartTwo)
 	res2 := SolvePartTwo(dataPartTwo)
 	fmt.Println(res2)
+
+	dataPartThree, err := common.ReadInput("inputPartThree.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	dataPartThree = common.TrimNewLineSuffix(dataPartThree)
+	res3 := SolvePartThree(dataPartThree)
+	fmt.Println(res3)
 
 }
