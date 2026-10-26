@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"slices"
 
 	"github.com/kevin-kho/aoc-utilities/common"
 )
 
-func Solve(intArr []int) {
+func SolveMin(intArr []int) {
 	mn := intArr[0]
 	for _, val := range intArr {
 		mn = min(mn, val)
@@ -23,11 +24,26 @@ func Solve(intArr []int) {
 }
 
 func SolvePartOne(intArr []int) {
-	Solve(intArr)
+	SolveMin(intArr)
 }
 
 func SolvePartTwo(intArr []int) {
-	Solve(intArr)
+	SolveMin(intArr)
+}
+
+func SolvePartThree(intArr []int) {
+	// Median will minimize the absolute devince
+	slices.Sort(intArr)
+	l := len(intArr)/2 - 1
+	r := len(intArr) / 2
+	med := (intArr[l] + intArr[r]) / 2
+
+	var res int
+	for _, val := range intArr {
+		res += common.IntAbs(val - med)
+	}
+
+	fmt.Println(res)
 }
 
 func main() {
@@ -52,5 +68,16 @@ func main() {
 		log.Fatal(err)
 	}
 	SolvePartTwo(intArrPartTwo)
+
+	dataPartThree, err := common.ReadInput("inputPartThree.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	dataPartThree = common.TrimNewLineSuffix(dataPartThree)
+	intArrPartThree, err := common.ParseIntArray(dataPartThree, []byte{'\n'})
+	if err != nil {
+		log.Fatal(err)
+	}
+	SolvePartThree(intArrPartThree)
 
 }
