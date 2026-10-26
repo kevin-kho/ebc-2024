@@ -15,15 +15,14 @@ type Spot struct {
 }
 
 type Grid struct {
-	Spots    [][]Spot
+	Spots    map[models.Pos]Spot
 	Diggable map[models.Pos]bool
 }
 
 func CreateGrid(data []byte) Grid {
-	var spots [][]Spot
+	spots := make(map[models.Pos]Spot)
 	mp := make(map[models.Pos]bool)
 	for y, row := range bytes.Split(data, []byte{'\n'}) {
-		var rw []Spot
 		for x, val := range row {
 			var diggable bool
 			if val == '#' {
@@ -31,13 +30,9 @@ func CreateGrid(data []byte) Grid {
 				mp[models.Pos{X: x, Y: y}] = true
 			}
 
-			rw = append(rw, Spot{
-				Val:      0,
-				Diggable: diggable,
-			})
+			spots[models.Pos{X: x, Y: y}] = Spot{Val: 0, Diggable: diggable}
 
 		}
-		spots = append(spots, rw)
 
 	}
 
@@ -51,65 +46,60 @@ func CreateGrid(data []byte) Grid {
 func SolvePartOne(grid Grid) {
 
 	deltas := models.GetDeltas()
-
-	X := len(grid.Spots[0])
-	Y := len(grid.Spots)
+	var X int
+	var Y int
+	for p := range grid.Spots {
+		X = max(X, p.X)
+		Y = max(Y, p.Y)
+	}
+	X++
+	Y++
 
 	for len(grid.Diggable) > 0 {
-		var newSpots [][]Spot
+		newSpots := make(map[models.Pos]Spot)
 		newDiggable := make(map[models.Pos]bool)
-		for y, row := range grid.Spots {
-			var spotRow []Spot
-			for x, curr := range row {
-				if !curr.Diggable {
-					spotRow = append(spotRow, curr)
+		for p, s := range grid.Spots {
+			if !s.Diggable {
+				newSpots[p] = s
+				continue
+			}
+
+			diggable := true
+			newVal := s.Val
+			for _, d := range deltas {
+				newX := p.X + d.X
+				newY := p.Y + d.Y
+				// out of bounds
+				if !(0 <= newX && newX < X) || !(0 <= newY && newY < Y) {
 					continue
 				}
 
-				diggable := true
-				newVal := curr.Val
-				for _, d := range deltas {
-					newX := x + d.X
-					newY := y + d.Y
-					// out of bounds
-					if !(0 <= newX && newX < X) || !(0 <= newY && newY < Y) {
-						continue
-					}
-
-					adj := grid.Spots[newY][newX]
-					if common.IntAbs(adj.Val-curr.Val)+1 > 1 {
-						diggable = false
-					}
+				adj := grid.Spots[models.Pos{X: newX, Y: newY}]
+				if common.IntAbs(adj.Val-s.Val)+1 > 1 {
+					diggable = false
 				}
-				if diggable {
-					newVal++
-					newDiggable[models.Pos{X: x, Y: y}] = true
-
-				}
-
-				spotRow = append(spotRow, Spot{
-					Val:      newVal,
-					Diggable: diggable,
-				})
-
 			}
-			newSpots = append(newSpots, spotRow)
+			if diggable {
+				newVal++
+				newDiggable[models.Pos{X: p.X, Y: p.Y}] = true
+			}
+
+			newSpots[models.Pos{X: p.X, Y: p.Y}] = Spot{
+				Val:      newVal,
+				Diggable: diggable,
+			}
+
 		}
+
 		grid.Spots = newSpots
 		grid.Diggable = newDiggable
 	}
 
 	var count int
-	for _, row := range grid.Spots {
-
-		var vals []int
-		for _, s := range row {
-			if s.Val > 0 {
-				count += s.Val
-			}
-			vals = append(vals, s.Val)
+	for _, s := range grid.Spots {
+		if s.Val > 0 {
+			count += s.Val
 		}
-		fmt.Println(vals)
 	}
 	fmt.Println(count)
 
