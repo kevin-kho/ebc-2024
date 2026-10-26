@@ -92,11 +92,6 @@ func SolvePartOne(grid Grid) {
 					Diggable: diggable,
 				})
 
-				// grid.Spots[y][x] = Spot{
-				// 	Val:      newVal,
-				// 	Diggable: diggable,
-				// }
-
 			}
 			newSpots = append(newSpots, spotRow)
 		}
@@ -120,6 +115,10 @@ func SolvePartOne(grid Grid) {
 
 }
 
+func SolvePartTwo(grid Grid) {
+	SolvePartOne(grid)
+}
+
 func main() {
 
 	// data, err := common.ReadInput("inputExample.txt")
@@ -128,7 +127,15 @@ func main() {
 		log.Fatal(err)
 	}
 	data = common.TrimNewLineSuffix(data)
-	grid := CreateGrid(data)
-	SolvePartOne(grid)
+	gridPartOne := CreateGrid(data)
+	SolvePartOne(gridPartOne)
+
+	dataPartTwo, err := common.ReadInput("inputPartTwo.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	dataPartTwo = common.TrimNewLineSuffix(dataPartTwo)
+	gridPartTwo := CreateGrid(dataPartTwo)
+	SolvePartTwo(gridPartTwo)
 
 }
