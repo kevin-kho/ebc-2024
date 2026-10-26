@@ -7,7 +7,7 @@ import (
 	"github.com/kevin-kho/aoc-utilities/common"
 )
 
-func SolvePartOne(intArr []int) {
+func Solve(intArr []int) {
 	mn := intArr[0]
 	for _, val := range intArr {
 		mn = min(mn, val)
@@ -22,17 +22,35 @@ func SolvePartOne(intArr []int) {
 
 }
 
-func main() {
-	data, err := common.ReadInput("inputPartOne.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	data = common.TrimNewLineSuffix(data)
-	intArr, err := common.ParseIntArray(data, []byte{'\n'})
-	if err != nil {
-		log.Fatal(err)
-	}
+func SolvePartOne(intArr []int) {
+	Solve(intArr)
+}
 
-	SolvePartOne(intArr)
+func SolvePartTwo(intArr []int) {
+	Solve(intArr)
+}
+
+func main() {
+	dataPartOne, err := common.ReadInput("inputPartOne.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	dataPartOne = common.TrimNewLineSuffix(dataPartOne)
+	intArrPartOne, err := common.ParseIntArray(dataPartOne, []byte{'\n'})
+	if err != nil {
+		log.Fatal(err)
+	}
+	SolvePartOne(intArrPartOne)
+
+	dataPartTwo, err := common.ReadInput("inputPartTwo.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	dataPartTwo = common.TrimNewLineSuffix(dataPartTwo)
+	intArrPartTwo, err := common.ParseIntArray(dataPartTwo, []byte{'\n'})
+	if err != nil {
+		log.Fatal(err)
+	}
+	SolvePartTwo(intArrPartTwo)
 
 }
