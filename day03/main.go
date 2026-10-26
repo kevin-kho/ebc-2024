@@ -109,6 +109,17 @@ func SolvePartTwo(grid Grid) {
 }
 
 func SolvePartThree(grid Grid) {
+	var deltas []models.Pos
+	for x := -1; x < 2; x++ {
+		for y := -1; y < 2; y++ {
+			if x == 0 && y == 0 {
+				continue
+			}
+			deltas = append(deltas, models.Pos{X: x, Y: y})
+		}
+	}
+
+	SolvePartOne(grid, deltas)
 
 }
 
@@ -130,5 +141,13 @@ func main() {
 	dataPartTwo = common.TrimNewLineSuffix(dataPartTwo)
 	gridPartTwo := CreateGrid(dataPartTwo)
 	SolvePartTwo(gridPartTwo)
+
+	dataPartThree, err := common.ReadInput("inputPartThree.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	dataPartThree = common.TrimNewLineSuffix(dataPartThree)
+	gridPartThree := CreateGrid(dataPartThree)
+	SolvePartThree(gridPartThree)
 
 }
