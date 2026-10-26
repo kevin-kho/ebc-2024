@@ -10,8 +10,7 @@ import (
 )
 
 type Spot struct {
-	Val      int
-	Diggable bool
+	Val int
 }
 
 type Grid struct {
@@ -21,16 +20,14 @@ type Grid struct {
 
 func CreateGrid(data []byte) Grid {
 	spots := make(map[models.Pos]Spot)
-	mp := make(map[models.Pos]bool)
+	diggable := make(map[models.Pos]bool)
 	for y, row := range bytes.Split(data, []byte{'\n'}) {
 		for x, val := range row {
-			var diggable bool
 			if val == '#' {
-				diggable = true
-				mp[models.Pos{X: x, Y: y}] = true
+				diggable[models.Pos{X: x, Y: y}] = true
 			}
 
-			spots[models.Pos{X: x, Y: y}] = Spot{Val: 0, Diggable: diggable}
+			spots[models.Pos{X: x, Y: y}] = Spot{Val: 0}
 
 		}
 
@@ -38,12 +35,12 @@ func CreateGrid(data []byte) Grid {
 
 	return Grid{
 		Spots:    spots,
-		Diggable: mp,
+		Diggable: diggable,
 	}
 
 }
 
-func Solve(grid Grid, deltas []models.Pos) {
+func Solve(grid Grid, deltas []models.Pos) int {
 
 	var X int
 	var Y int
@@ -58,7 +55,7 @@ func Solve(grid Grid, deltas []models.Pos) {
 		newSpots := make(map[models.Pos]Spot)
 		newDiggable := make(map[models.Pos]bool)
 		for p, s := range grid.Spots {
-			if !s.Diggable {
+			if !grid.Diggable[p] {
 				newSpots[p] = s
 				continue
 			}
@@ -68,10 +65,6 @@ func Solve(grid Grid, deltas []models.Pos) {
 			for _, d := range deltas {
 				newX := p.X + d.X
 				newY := p.Y + d.Y
-				// out of bounds
-				// if !(0 <= newX && newX < X) || !(0 <= newY && newY < Y) {
-				// 	continue
-				// }
 
 				adj := grid.Spots[models.Pos{X: newX, Y: newY}]
 				if common.IntAbs(adj.Val-s.Val)+1 > 1 {
@@ -84,8 +77,7 @@ func Solve(grid Grid, deltas []models.Pos) {
 			}
 
 			newSpots[models.Pos{X: p.X, Y: p.Y}] = Spot{
-				Val:      newVal,
-				Diggable: diggable,
+				Val: newVal,
 			}
 
 		}
@@ -96,20 +88,21 @@ func Solve(grid Grid, deltas []models.Pos) {
 
 	var count int
 	for _, s := range grid.Spots {
-		if s.Val > 0 {
-			count += s.Val
-		}
+		count += s.Val
 	}
-	fmt.Println(count)
+
+	return count
 
 }
 
 func SolvePartOne(grid Grid) {
-	Solve(grid, models.GetDeltas())
+	res := Solve(grid, models.GetDeltas())
+	fmt.Println(res)
 }
 
 func SolvePartTwo(grid Grid) {
-	Solve(grid, models.GetDeltas())
+	res := Solve(grid, models.GetDeltas())
+	fmt.Println(res)
 }
 
 func SolvePartThree(grid Grid) {
@@ -123,7 +116,8 @@ func SolvePartThree(grid Grid) {
 		}
 	}
 
-	Solve(grid, deltas)
+	res := Solve(grid, deltas)
+	fmt.Println(res)
 
 }
 
