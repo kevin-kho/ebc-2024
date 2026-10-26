@@ -43,9 +43,8 @@ func CreateGrid(data []byte) Grid {
 
 }
 
-func SolvePartOne(grid Grid) {
+func SolvePartOne(grid Grid, deltas []models.Pos) {
 
-	deltas := models.GetDeltas()
 	var X int
 	var Y int
 	for p := range grid.Spots {
@@ -70,9 +69,9 @@ func SolvePartOne(grid Grid) {
 				newX := p.X + d.X
 				newY := p.Y + d.Y
 				// out of bounds
-				if !(0 <= newX && newX < X) || !(0 <= newY && newY < Y) {
-					continue
-				}
+				// if !(0 <= newX && newX < X) || !(0 <= newY && newY < Y) {
+				// 	continue
+				// }
 
 				adj := grid.Spots[models.Pos{X: newX, Y: newY}]
 				if common.IntAbs(adj.Val-s.Val)+1 > 1 {
@@ -106,7 +105,11 @@ func SolvePartOne(grid Grid) {
 }
 
 func SolvePartTwo(grid Grid) {
-	SolvePartOne(grid)
+	SolvePartOne(grid, models.GetDeltas())
+}
+
+func SolvePartThree(grid Grid) {
+
 }
 
 func main() {
@@ -118,7 +121,7 @@ func main() {
 	}
 	data = common.TrimNewLineSuffix(data)
 	gridPartOne := CreateGrid(data)
-	SolvePartOne(gridPartOne)
+	SolvePartOne(gridPartOne, models.GetDeltas())
 
 	dataPartTwo, err := common.ReadInput("inputPartTwo.txt")
 	if err != nil {
